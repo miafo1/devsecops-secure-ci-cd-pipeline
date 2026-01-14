@@ -15,11 +15,14 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.10'
 
       - name: Install Dependencies
         run: |
-          pip install semgrep checkov trivy
+          pip install semgrep checkov
+          # Trivy is not a Python package — install the Trivy binary instead
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
+          trivy --version || true
           # Note: Some tools like TruffleHog and ZAP run via Docker which is available in GitHub runners.
           # OWASP Check might need setup or docker.
 
@@ -34,7 +37,7 @@ jobs:
 
       - name: Upload Security Reports
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: security-reports
           path: security/reports/
