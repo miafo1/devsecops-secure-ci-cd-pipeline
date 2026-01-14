@@ -53,7 +53,8 @@ fi
 # Checkov returns non-zero exit code on failure, but we captured output.
 # We can check the text report for "Failed checks: 0" or failing count.
 if grep -q "Failed checks:" security/reports/checkov.txt; then
-    FAIL_COUNT=$(grep "Failed checks:" security/reports/checkov.txt | awk '{print $3}')
+    # Extract the number after "Failed checks:" using sed/awk to get the correct value
+    FAIL_COUNT=$(grep "Failed checks:" security/reports/checkov.txt | sed 's/.*Failed checks: \([0-9]*\).*/\1/' | head -1)
     FAIL_COUNT=$(echo "$FAIL_COUNT" | tr -cd '0-9')
     FAIL_COUNT=${FAIL_COUNT:-0}
     if [ "$FAIL_COUNT" -gt 0 ]; then
