@@ -11,12 +11,14 @@ def home():
 def health():
     return jsonify(status="healthy"), 200
 
-# Intentional SQL Injection vulnerability (Simulated)
 @app.route('/user/<username>')
 def get_user(username):
-    # This is a simulated vulnerability for Semgrep to find
-    query = "SELECT * FROM users WHERE username = '" + username + "'"
-    return f"Executed query: {query}"
+    # Use parameterized query (simulation) to avoid SQL injection
+    query = "SELECT * FROM users WHERE username = %s"
+    params = (username,)
+    # Return structured JSON to avoid XSS via formatted strings
+    return jsonify(executed_query=query, params=params), 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    # Bind to localhost for local scans to avoid exposing dev server publicly
+    app.run(host='127.0.0.1', port=5000)

@@ -7,5 +7,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Running as root (Trivy should complain if configured to check for non-root)
+# Create a non-root user and switch to it to avoid running as root
+RUN groupadd -r appuser && useradd -r -g appuser appuser && chown -R appuser:appuser /app
+USER appuser
+
 CMD ["python", "app.py"]

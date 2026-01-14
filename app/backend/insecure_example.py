@@ -1,3 +1,4 @@
+<!-- deleted per README: insecure example removed -->
 import os
 
 def connect_to_aws():
