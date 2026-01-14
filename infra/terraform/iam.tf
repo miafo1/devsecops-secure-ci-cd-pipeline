@@ -1,16 +1,21 @@
-resource "aws_iam_user" "ci_user" {
-  name = "devsecops-demo-ci-user"
-  path = "/"
+resource "aws_iam_role" "ci_role" {
+  name = "devsecops-demo-ci-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = { Service = "ec2.amazonaws.com" }
+      }
+    ]
+  })
 }
 
-resource "aws_iam_access_key" "ci_user_key" {
-  user = aws_iam_user.ci_user.name
-}
-
-# Least privilege policy (mock example)
-resource "aws_iam_user_policy" "ci_user_ro" {
+# Least privilege role policy (mock example)
+resource "aws_iam_role_policy" "ci_role_ro" {
   name = "ecr-read-only"
-  user = aws_iam_user.ci_user.name
+  role = aws_iam_role.ci_role.id
 
   policy = <<EOF
 {
@@ -23,9 +28,15 @@ resource "aws_iam_user_policy" "ci_user_ro" {
         "ecr:BatchCheckLayerAvailability"
       ],
       "Effect": "Allow",
-      "Resource": "*"
+      "Resource": "arn:aws:ecr:*:*:repository/*"
     }
   ]
 }
 EOF
+}
+
+# Instance profile for attaching role to EC2 instances in mock infra
+resource "aws_iam_instance_profile" "ci_instance_profile" {
+  name = "ci-instance-profile"
+  role = aws_iam_role.ci_role.name
 }

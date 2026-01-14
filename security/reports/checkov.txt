@@ -9,39 +9,51 @@ By Prisma Cloud | version: 3.2.497
 
 terraform scan results:
 
-Passed checks: 17, Failed checks: 4, Skipped checks: 0
+Passed checks: 23, Failed checks: 5, Skipped checks: 0
 
-Check: CKV_AWS_348: "Ensure IAM root user does not have Access keys"
-	PASSED for resource: aws_iam_access_key.ci_user_key
-	File: /iam.tf:6-8
-	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-348
-Check: CKV_AWS_62: "Ensure IAM policies that allow full "*-*" administrative privileges are not created"
-	PASSED for resource: aws_iam_user_policy.ci_user_ro
-	File: /iam.tf:11-31
+Check: CKV_AWS_274: "Disallow IAM roles, users, and groups from using the AWS AdministratorAccess policy"
+	PASSED for resource: aws_iam_role.ci_role
+	File: /iam.tf:1-13
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-274
+Check: CKV_AWS_61: "Ensure AWS IAM policy does not allow assume role permission across all services"
+	PASSED for resource: aws_iam_role.ci_role
+	File: /iam.tf:1-13
 	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-iam-45
+Check: CKV_AWS_60: "Ensure IAM role allows only specific services or principals to assume it"
+	PASSED for resource: aws_iam_role.ci_role
+	File: /iam.tf:1-13
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-iam-44
+Check: CKV_AWS_62: "Ensure IAM policies that allow full "*-*" administrative privileges are not created"
+	PASSED for resource: aws_iam_role_policy.ci_role_ro
+	File: /iam.tf:16-36
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-iam-45
+Check: CKV_AWS_355: "Ensure no IAM policies documents allow "*" as a statement's resource for restrictable actions"
+	PASSED for resource: aws_iam_role_policy.ci_role_ro
+	File: /iam.tf:16-36
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-355
 Check: CKV_AWS_287: "Ensure IAM policies does not allow credentials exposure"
-	PASSED for resource: aws_iam_user_policy.ci_user_ro
-	File: /iam.tf:11-31
+	PASSED for resource: aws_iam_role_policy.ci_role_ro
+	File: /iam.tf:16-36
 	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-287
 Check: CKV_AWS_286: "Ensure IAM policies does not allow privilege escalation"
-	PASSED for resource: aws_iam_user_policy.ci_user_ro
-	File: /iam.tf:11-31
+	PASSED for resource: aws_iam_role_policy.ci_role_ro
+	File: /iam.tf:16-36
 	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-286
 Check: CKV_AWS_290: "Ensure IAM policies does not allow write access without constraints"
-	PASSED for resource: aws_iam_user_policy.ci_user_ro
-	File: /iam.tf:11-31
+	PASSED for resource: aws_iam_role_policy.ci_role_ro
+	File: /iam.tf:16-36
 	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-290
 Check: CKV_AWS_63: "Ensure no IAM policies documents allow "*" as a statement's actions"
-	PASSED for resource: aws_iam_user_policy.ci_user_ro
-	File: /iam.tf:11-31
+	PASSED for resource: aws_iam_role_policy.ci_role_ro
+	File: /iam.tf:16-36
 	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/iam-48
 Check: CKV_AWS_289: "Ensure IAM policies does not allow permissions management / resource exposure without constraints"
-	PASSED for resource: aws_iam_user_policy.ci_user_ro
-	File: /iam.tf:11-31
+	PASSED for resource: aws_iam_role_policy.ci_role_ro
+	File: /iam.tf:16-36
 	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-289
 Check: CKV_AWS_288: "Ensure IAM policies does not allow data exfiltration"
-	PASSED for resource: aws_iam_user_policy.ci_user_ro
-	File: /iam.tf:11-31
+	PASSED for resource: aws_iam_role_policy.ci_role_ro
+	File: /iam.tf:16-36
 	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-288
 Check: CKV_AWS_41: "Ensure no hard coded AWS access key and secret key exists in provider"
 	PASSED for resource: aws.default
@@ -71,104 +83,89 @@ Check: CKV_AWS_25: "Ensure no security groups allow ingress from 0.0.0.0:0 to po
 	PASSED for resource: aws_security_group.allow_all
 	File: /security.tf:1-22
 	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-2
-Check: CKV2_AWS_22: "Ensure an IAM User does not have access to the console"
-	PASSED for resource: aws_iam_user.ci_user
-	File: /iam.tf:1-4
-	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-an-iam-user-does-not-have-access-to-the-console-group
-Check: CKV2_AWS_40: "Ensure AWS IAM policy does not allow full IAM privileges"
-	PASSED for resource: aws_iam_user_policy.ci_user_ro
-	File: /iam.tf:11-31
-	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-2-40
-Check: CKV_AWS_273: "Ensure access is controlled through SSO and not AWS IAM defined users"
-	FAILED for resource: aws_iam_user.ci_user
-	File: /iam.tf:1-4
-	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-273
-
-		1 | resource "aws_iam_user" "ci_user" {
-		2 |   name = "devsecops-demo-ci-user"
-		3 |   path = "/"
-		4 | }
-
-Check: CKV_AWS_355: "Ensure no IAM policies documents allow "*" as a statement's resource for restrictable actions"
-	FAILED for resource: aws_iam_user_policy.ci_user_ro
-	File: /iam.tf:11-31
-	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-355
-
-		11 | resource "aws_iam_user_policy" "ci_user_ro" {
-		12 |   name = "ecr-read-only"
-		13 |   user = aws_iam_user.ci_user.name
-		14 | 
-		15 |   policy = <<EOF
-		16 | {
-		17 |   "Version": "2012-10-17",
-		18 |   "Statement": [
-		19 |     {
-		20 |       "Action": [
-		21 |         "ecr:GetDownloadUrlForLayer",
-		22 |         "ecr:BatchGetImage",
-		23 |         "ecr:BatchCheckLayerAvailability"
-		24 |       ],
-		25 |       "Effect": "Allow",
-		26 |       "Resource": "*"
-		27 |     }
-		28 |   ]
-		29 | }
-		30 | EOF
-		31 | }
-
-Check: CKV_AWS_40: "Ensure IAM policies are attached only to groups or roles (Reducing access management complexity may in-turn reduce opportunity for a principal to inadvertently receive or retain excessive privileges.)"
-	FAILED for resource: aws_iam_user_policy.ci_user_ro
-	File: /iam.tf:11-31
-	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/iam-16-iam-policy-privileges-1
-
-		11 | resource "aws_iam_user_policy" "ci_user_ro" {
-		12 |   name = "ecr-read-only"
-		13 |   user = aws_iam_user.ci_user.name
-		14 | 
-		15 |   policy = <<EOF
-		16 | {
-		17 |   "Version": "2012-10-17",
-		18 |   "Statement": [
-		19 |     {
-		20 |       "Action": [
-		21 |         "ecr:GetDownloadUrlForLayer",
-		22 |         "ecr:BatchGetImage",
-		23 |         "ecr:BatchCheckLayerAvailability"
-		24 |       ],
-		25 |       "Effect": "Allow",
-		26 |       "Resource": "*"
-		27 |     }
-		28 |   ]
-		29 | }
-		30 | EOF
-		31 | }
-
+Check: CKV_AWS_46: "Ensure no hard-coded secrets exist in EC2 user data"
+	PASSED for resource: aws_instance.demo
+	File: /security.tf:24-31
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/secrets-policies/bc-aws-secrets-1
+Check: CKV_AWS_88: "EC2 instance should not have public IP."
+	PASSED for resource: aws_instance.demo
+	File: /security.tf:24-31
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/public-policies/public-12
 Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
-	FAILED for resource: aws_security_group.allow_all
+	PASSED for resource: aws_security_group.allow_all
 	File: /security.tf:1-22
 	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-security-groups-are-attached-to-ec2-instances-or-elastic-network-interfaces-enis
+Check: CKV2_AWS_56: "Ensure AWS Managed IAMFullAccess IAM policy is not used."
+	PASSED for resource: aws_iam_role.ci_role
+	File: /iam.tf:1-13
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-2-56
+Check: CKV2_AWS_40: "Ensure AWS IAM policy does not allow full IAM privileges"
+	PASSED for resource: aws_iam_role_policy.ci_role_ro
+	File: /iam.tf:16-36
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-2-40
+Check: CKV_AWS_126: "Ensure that detailed monitoring is enabled for EC2 instances"
+	FAILED for resource: aws_instance.demo
+	File: /security.tf:24-31
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/ensure-that-detailed-monitoring-is-enabled-for-ec2-instances
 
-		1  | resource "aws_security_group" "allow_all" {
-		2  |   name        = "allow_all"
-		3  |   description = "Allow all inbound traffic"
-		4  |   vpc_id      = "vpc-12345678" # Mock VPC ID
-		5  | 
-		6  |   # Restrict SSH access to a private management network instead of 0.0.0.0/0
-		7  |   ingress {
-		8  |     description = "SSH from management network"
-		9  |     from_port   = 22
-		10 |     to_port     = 22
-		11 |     protocol    = "tcp"
-		12 |     cidr_blocks = ["10.0.0.0/16"]
-		13 |   }
-		14 | 
-		15 |   egress {
-		16 |     description = "Allow outbound HTTP/HTTPS only"
-		17 |     from_port   = 80
-		18 |     to_port     = 443
-		19 |     protocol    = "tcp"
-		20 |     cidr_blocks = ["0.0.0.0/0"]
-		21 |   }
-		22 | }
+		24 | resource "aws_instance" "demo" {
+		25 |   ami           = "ami-0c55b159cbfafe1f0" # placeholder
+		26 |   instance_type = "t3.micro"
+		27 |   vpc_security_group_ids = [aws_security_group.allow_all.id]
+		28 |   tags = {
+		29 |     Name = "devsecops-demo-instance"
+		30 |   }
+		31 | }
+Check: CKV_AWS_79: "Ensure Instance Metadata Service Version 1 is not enabled"
+	FAILED for resource: aws_instance.demo
+	File: /security.tf:24-31
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-general-31
 
+		24 | resource "aws_instance" "demo" {
+		25 |   ami           = "ami-0c55b159cbfafe1f0" # placeholder
+		26 |   instance_type = "t3.micro"
+		27 |   vpc_security_group_ids = [aws_security_group.allow_all.id]
+		28 |   tags = {
+		29 |     Name = "devsecops-demo-instance"
+		30 |   }
+		31 | }
+Check: CKV_AWS_135: "Ensure that EC2 is EBS optimized"
+	FAILED for resource: aws_instance.demo
+	File: /security.tf:24-31
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-ec2-is-ebs-optimized
+
+		24 | resource "aws_instance" "demo" {
+		25 |   ami           = "ami-0c55b159cbfafe1f0" # placeholder
+		26 |   instance_type = "t3.micro"
+		27 |   vpc_security_group_ids = [aws_security_group.allow_all.id]
+		28 |   tags = {
+		29 |     Name = "devsecops-demo-instance"
+		30 |   }
+		31 | }
+Check: CKV_AWS_8: "Ensure all data stored in the Launch configuration or instance Elastic Blocks Store is securely encrypted"
+	FAILED for resource: aws_instance.demo
+	File: /security.tf:24-31
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/general-13
+
+		24 | resource "aws_instance" "demo" {
+		25 |   ami           = "ami-0c55b159cbfafe1f0" # placeholder
+		26 |   instance_type = "t3.micro"
+		27 |   vpc_security_group_ids = [aws_security_group.allow_all.id]
+		28 |   tags = {
+		29 |     Name = "devsecops-demo-instance"
+		30 |   }
+		31 | }
+Check: CKV2_AWS_41: "Ensure an IAM role is attached to EC2 instance"
+	FAILED for resource: aws_instance.demo
+	File: /security.tf:24-31
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/ensure-an-iam-role-is-attached-to-ec2-instance
+
+		24 | resource "aws_instance" "demo" {
+		25 |   ami           = "ami-0c55b159cbfafe1f0" # placeholder
+		26 |   instance_type = "t3.micro"
+		27 |   vpc_security_group_ids = [aws_security_group.allow_all.id]
+		28 |   tags = {
+		29 |     Name = "devsecops-demo-instance"
+		30 |   }
+		31 | }
 

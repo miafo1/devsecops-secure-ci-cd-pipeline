@@ -20,3 +20,29 @@ resource "aws_security_group" "allow_all" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+# Attach security group to a mock instance so Checkov considers it "used"
+resource "aws_instance" "demo" {
+  ami                    = "ami-0c55b159cbfafe1f0" # placeholder
+  instance_type          = "t3.micro"
+  vpc_security_group_ids = [aws_security_group.allow_all.id]
+  iam_instance_profile   = aws_iam_instance_profile.ci_instance_profile.name
+  monitoring             = true
+  ebs_optimized          = true
+
+  metadata_options {
+    http_tokens                 = "required"
+    http_endpoint               = "enabled"
+    http_put_response_hop_limit = 1
+  }
+
+  root_block_device {
+    encrypted   = true
+    volume_size = 8
+    volume_type = "gp2"
+  }
+
+  tags = {
+    Name = "devsecops-demo-instance"
+  }
+}

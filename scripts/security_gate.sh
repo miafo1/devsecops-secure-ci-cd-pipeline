@@ -17,7 +17,7 @@ if [ -s security/reports/trufflehog.json ]; then
     if command -v jq >/dev/null 2>&1; then
         FAIL_COUNT=$(jq 'if type=="array" then length elif .results then (.results|length) else 0 end' security/reports/trufflehog.json 2>/dev/null || echo 0)
     else
-        FAIL_COUNT=$(python3 - <<'PY'
+        FAIL_COUNT=$(python3 - <<'PY' < security/reports/trufflehog.json
 import json,sys
 try:
     j=json.load(sys.stdin)
@@ -34,7 +34,8 @@ try:
 except Exception:
     print(0)
 PY
- < security/reports/trufflehog.json)
+)
+    fi
     # sanitize to digits only (protect against trailing commas or formatting)
     FAIL_COUNT=$(echo "$FAIL_COUNT" | tr -cd '0-9')
     FAIL_COUNT=${FAIL_COUNT:-0}
