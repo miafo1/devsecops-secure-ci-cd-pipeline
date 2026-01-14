@@ -1,43 +1,8 @@
-                   
-                   
-┌─────────────────┐
-│ 5 Code Findings │
-└─────────────────┘
-                                         
-  [36m[22m[24m  app/backend/Dockerfile[0m
-   ❯❯❱ [1mdockerfile.security.missing-user.missing-user[0m
-          By not specifying a USER, a program in the container may run as 'root'. This is a security  
-          hazard. If an attacker can control a process running as root, they may have control over the
-          container. Ensure that the last USER in a Dockerfile is a USER other than 'root'.           
-          Details: https://sg.run/Gbvn                                                                
-                                                                                                      
-           [32m▶▶┆ Autofix ▶ [0mUSER non-root CMD ["python", "app.py"]
-           11┆ CMD ["python", "app.py"]
-                                     
-  [36m[22m[24m  app/backend/app.py[0m
-   ❯❯❱ [1mpython.flask.security.injection.tainted-sql-string.tainted-sql-string[0m
-          Detected user input used to manually construct a SQL string. This is usually bad practice     
-          because manual construction could accidentally result in a SQL injection. An attacker could   
-          use a SQL injection to steal or modify contents of the database. Instead, use a parameterized 
-          query which is available by default in most database engines. Alternatively, consider using an
-          object-relational mapper (ORM) such as SQLAlchemy which will protect your queries.            
-          Details: https://sg.run/JxZj                                                                  
-                                                                                                        
-           18┆ query = "SELECT * FROM users WHERE username = '" + username + "'"
-   
-    ❯❱ [1mpython.flask.security.audit.directly-returned-format-string.directly-returned-format-string[0m
-          Detected Flask route directly returning a formatted string. This is subject to cross-site   
-          scripting if user input can reach the string. Consider using the template engine instead and
-          rendering pages with 'render_template()'.                                                   
-          Details: https://sg.run/Zv6o                                                                
-                                                                                                      
-           19┆ return f"Executed query: {query}"
-   
-    ❯❱ [1mpython.flask.security.audit.app-run-param-config.avoid_app_run_with_bad_host[0m
-          Running flask app with host 0.0.0.0 could expose the server publicly.
-          Details: https://sg.run/eLby                                         
-                                                                               
-           22┆ app.run(host='0.0.0.0', port=5000)
+                  
+                  
+┌────────────────┐
+│ 1 Code Finding │
+└────────────────┘
                                                   
   [36m[22m[24m  app/backend/insecure_example.py[0m
     ❯❱ [1mpython.lang.security.audit.eval-detected.eval-detected[0m
@@ -46,4 +11,4 @@
           vulnerability. Ensure evaluated content is not definable by external sources.              
           Details: https://sg.run/ZvrD                                                               
                                                                                                      
-           11┆ eval(user_input)
+           12┆ eval(user_input)

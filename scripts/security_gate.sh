@@ -13,17 +13,39 @@ fi
 
 # Check TruffleHog (Secrets)
 if [ -s security/reports/trufflehog.json ]; then
-     # Check if the file contains any "Verified" secrets or just scan metadata? 
-     # Trufflehog V3 outputs JSON lines. Empty file means no output? 
-     # Actually we should check if it found anything.
-     if grep -q "Detector" security/reports/trufflehog.json; then
-        echo "[FAIL] Secrets: Potential secrets found by TruffleHog"
+    # Try to parse with jq if available, otherwise fall back to python3.
+    if command -v jq >/dev/null 2>&1; then
+        FAIL_COUNT=$(jq 'if type=="array" then length elif .results then (.results|length) else 0 end' security/reports/trufflehog.json 2>/dev/null || echo 0)
+    else
+        FAIL_COUNT=$(python3 - <<'PY'
+import json,sys
+try:
+    j=json.load(sys.stdin)
+    if isinstance(j, list):
+        print(len(j))
+    elif isinstance(j, dict):
+        if isinstance(j.get("results"), list):
+            print(len(j.get("results")))
+        else:
+            # best-effort: no clear results key
+            print(0)
+    else:
+        print(0)
+except Exception:
+    print(0)
+PY
+ < security/reports/trufflehog.json)
+    # sanitize to digits only (protect against trailing commas or formatting)
+    FAIL_COUNT=$(echo "$FAIL_COUNT" | tr -cd '0-9')
+    FAIL_COUNT=${FAIL_COUNT:-0}
+    if [ "$FAIL_COUNT" -gt 0 ]; then
+        echo "[FAIL] Secrets: Potential secrets found by TruffleHog ($FAIL_COUNT)"
         EXIT_CODE=1
-     else
+    else
         echo "[PASS] Secrets: No secrets found"
-     fi
+    fi
 else
-     echo "[PASS] Secrets: No secrets found (empty log)"
+    echo "[PASS] Secrets: No secrets found (empty log)"
 fi
 
 # Check Checkov (IaC)
@@ -31,7 +53,9 @@ fi
 # We can check the text report for "Failed checks: 0" or failing count.
 if grep -q "Failed checks:" security/reports/checkov.txt; then
     FAIL_COUNT=$(grep "Failed checks:" security/reports/checkov.txt | awk '{print $3}')
-    if [ "$FAIL_COUNT" -gt "0" ]; then
+    FAIL_COUNT=$(echo "$FAIL_COUNT" | tr -cd '0-9')
+    FAIL_COUNT=${FAIL_COUNT:-0}
+    if [ "$FAIL_COUNT" -gt 0 ]; then
         echo "[FAIL] IaC: $FAIL_COUNT policy violations found by Checkov"
         EXIT_CODE=1
     else

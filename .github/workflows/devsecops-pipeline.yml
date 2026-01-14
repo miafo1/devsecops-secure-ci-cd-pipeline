@@ -20,6 +20,10 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install semgrep checkov
+          # Install backend dependencies so the app can be started during DAST
+          if [ -f app/backend/requirements.txt ]; then
+            pip install -r app/backend/requirements.txt
+          fi
           # Trivy is not a Python package — install the Trivy binary instead
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
           trivy --version || true
