@@ -1,0 +1,60 @@
+name: DevSecOps Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: |
+          pip install semgrep checkov trivy
+          # Note: Some tools like TruffleHog and ZAP run via Docker which is available in GitHub runners.
+          # OWASP Check might need setup or docker.
+
+      - name: Run Security Scans
+        run: |
+          chmod +x scripts/*.sh
+          ./scripts/ci_scan.sh
+
+      - name: Security Gate Evaluation
+        run: |
+          ./scripts/security_gate.sh
+
+      - name: Upload Security Reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-reports
+          path: security/reports/
+
+  build-and-deploy:
+    needs: security-scan
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Docker Image
+        run: |
+          docker build -t devsecops-demo:latest app/backend/
+
+      - name: Mock Deploy to AWS
+        run: |
+          echo "Deploying to AWS EKS/ECR..."
+          # In a real scenario:
+          # aws ecr get-login-password ...
+          # docker push ...
+          # kubectl apply ...
+          echo "Deployment successful (Mocked)"
